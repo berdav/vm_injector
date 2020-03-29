@@ -55,11 +55,13 @@ Your public key has been saved in id_cloud.pub
 2. Copy and paste the key contained in `id_cloud.pub` to your cloud provider
 ![ssh key upload hetzner](https://raw.githubusercontent.com/berdav/vm_injector/master/readme_img/hetzner_ssh_load.png)
 
-3. Create a server selecting ubuntu-18.04 as the os image and adding the
-loaded ssh-key, wait for it to boot and get its IP address.
-For example on hetzner you will see the following screen:
+3. Create a server selecting ubuntu-18.04 as the os image:
 ![Ubuntu 18.04 screen selection](https://raw.githubusercontent.com/berdav/vm_injector/master/readme_img/hetzner_ubuntu.png)
+
+and adding the loaded ssh-key:
 ![ssh key selection](https://raw.githubusercontent.com/berdav/vm_injector/master/readme_img/hetzner_ssh_key.png)
+
+Wait for it to boot and get its IP address.  For example on hetzner you will see the following screen:
 ![Server instantiated](https://raw.githubusercontent.com/berdav/vm_injector/master/readme_img/hetzner_server.png)
 
 4. Run the script with the IP of the server and your ssh-key.
@@ -83,6 +85,7 @@ In 5 minute connect to the machine
 
 5. Give some time to the disk writer and then install the system
 (if it is not autoinstallable) using the console of your cloud provider.
+
 ![Openbsd Installation screen](https://raw.githubusercontent.com/berdav/vm_injector/master/readme_img/openbsd_install.png)
 
 6. Reset the ssh key for your server and enjoy it!
