@@ -5,7 +5,7 @@ operating system over a cloud provider like Hetzner.
 In the tested environment the operating system was OpenBSD 6.6.
 
 The same thing can be achieved by using the rescue mode in
-certain cloud provider, but you'll need to use the graphical mode
+certain cloud provider, but you'll need to use the cloud provider Web ui
 to enable it.
 
 ## Prerequisites
