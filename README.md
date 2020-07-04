@@ -21,10 +21,11 @@ ssh access to it.
 
 Then you can run the script as:
 ```bash
-$ execute.sh 192.168.0.123 ~/.ssh/id_rsa
+$ execute.sh -p 2222 -k ~/.ssh/id_rsa -I 192.168.0.123
 ```
 with `~/.ssh/id_rsa` as your ssh key and 192.168.0.123 as the target
-machine ip address.
+machine ip address.  You can provide a non-standard port with the -p
+switch.
 
 After that you can install the system from your vnc console (if you
 have any).  Otherwise you can place an autoinstalling or pre-installed
