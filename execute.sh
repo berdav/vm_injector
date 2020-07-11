@@ -75,7 +75,7 @@ fi
 echo "Seems that this is the first run, nuking the system."
 # This machine will get destroyed
 scp -P "$PORT" -i "$KEY" inject.sh "$USER@$IP:/root/inject.sh"
-scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/$IMG"
+scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/target.img"
 
 ssh -p "$PORT" -i "$KEY" "$USER@$IP" /root/inject.sh
 
