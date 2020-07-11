@@ -4,12 +4,45 @@ set -eu
 
 EXECFILE=/usr/bin/nukedown
 INSTALLDEST=/opt
-#URL=https://openbsd.mirror.garr.it/pub/OpenBSD/6.6/amd64/install66.fs
+
 URL=/root/target.img
+OVA_URL=/root/target.ova
+VMDK_URL=/root/target.vmdk
+
+convert_vmdk() {
+	VMDK="$1"
+	DEBIAN_FRONTEND=noninteractive apt install -y qemu-utils
+	qemu-img convert "$VMDK" "$URL"
+
+	rm "$VMDK"
+}
+
+convert_ova() {
+	OVA_URL="$1"
+	# Check if the target is ova and convert it
+	TARGET_TAR=$(echo "$OVA_URL" | sed 's/\.ova/.tar/')
+
+	mv $OVA_URL $TARGET_TAR
+	VMDK="$(tar taf $OVA_URL | grep vmdk)"
+
+	tar xvaf "$TARGET_URL"
+
+	convert_vmdk "$VMDK"
+
+	rm 
+}
 
 # Install busybox and kexec
 DEBIAN_FRONTEND=noninteractive apt update
 DEBIAN_FRONTEND=noninteractive apt install -y kexec-tools busybox-static
+
+if [ -f $VMDK_URL ]; then
+	convert_vmdk "$VMDK_URL"
+fi
+
+if [ -f $OVA_URL ]; then
+	convert_ova "$OVA_URL"
+fi
 
 # Check root disk
 ROOTLABEL=$(cat /proc/cmdline | sed 's/.*\(root=[^ ]*\).*/\1/')
@@ -22,7 +55,7 @@ cat <<_END_ >$EXECFILE
 #!/bin/sh
 /bin/echo "[+] running init script!"
 /bin/echo "[ ] Let s nuke down the system"
-/bin/mount -t tmpfs none /mnt
+/bin/mount -t tmpfs -o size=2G none /mnt
 /bin/mkdir /mnt/proc
 /bin/mkdir /mnt/dev
 /bin/mkdir /mnt/sys
@@ -38,7 +71,7 @@ cat <<_END_ >$EXECFILE
 /bin/mount --move /run /mnt/run
 /sbin/pivot_root /mnt /mnt/old_root
 echo "[ ] Overwriting disk..."
-/bin/busybox dd if=$INSTALLDEST/target.img of=/dev/sda
+/bin/busybox dd if=$INSTALLDEST/target.img of=/dev/sda conv=sync
 /bin/busybox reboot -f
 _END_
 chmod +x $EXECFILE

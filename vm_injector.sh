@@ -74,8 +74,20 @@ fi
 
 echo "Seems that this is the first run, nuking the system."
 # This machine will get destroyed
-scp -P "$PORT" -i "$KEY" inject.sh "$USER@$IP:/root/inject.sh"
-scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/target.img"
+scp -P "$PORT" -i "$KEY" injectors/inject.sh "$USER@$IP:/root/inject.sh"
+EXT=$(echo "$IMG" | awk -F . '{print $NF}')
+
+case $EXT in
+	ova)
+		scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/target.ova"
+		;;
+	vmdk)
+		scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/target.vmdk"
+		;;
+	*)
+		scp -P "$PORT" -i "$KEY" "$IMG" "$USER@$IP:/root/target.img"
+		;;
+esac
 
 ssh -p "$PORT" -i "$KEY" "$USER@$IP" /root/inject.sh
 
