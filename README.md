@@ -21,7 +21,7 @@ ssh access to it.
 
 Then you can run the script as:
 ```bash
-$ execute.sh -p 2222 -k ~/.ssh/id_rsa -I 192.168.0.123
+$ vm_injector.sh -p 2222 -k ~/.ssh/id_rsa -I 192.168.0.123
 ```
 with `~/.ssh/id_rsa` as your ssh key and 192.168.0.123 as the target
 machine ip address.  You can provide a non-standard port with the -p
@@ -62,7 +62,7 @@ Wait for it to boot and get its IP address.  For example on hetzner you will see
 
 4. Run the script with the IP of the server and your ssh-key.
 ```bash
-bera@walrus ~/injector $ ./execute.sh 95.217.xx.xx id_cloud
+bera@walrus ~/injector $ ./vm_injector.sh 95.217.xx.xx id_cloud
 The authenticity of host '95.217.xx.xx (95.217.xx.xx)' can't be established.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 Warning: Permanently added '95.217.xx.xx' (ECDSA) to the list of known hosts.
