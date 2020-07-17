@@ -16,6 +16,8 @@ PORT="22"
 IMG="target.img"
 # Target operating system
 TARGET_OS="OpenBSD"
+# Base directory of the script
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 usage() {
 	echo "Usage: $1 <-i IP> [optargs]" >&2
@@ -74,7 +76,7 @@ fi
 
 echo "Seems that this is the first run, nuking the system."
 # This machine will get destroyed
-scp -P "$PORT" -i "$KEY" injectors/inject.sh "$USER@$IP:/root/inject.sh"
+scp -P "$PORT" -i "$KEY" "$BASEDIR/injectors/inject.sh" "$USER@$IP:/root/inject.sh"
 EXT=$(echo "$IMG" | awk -F . '{print $NF}')
 
 case $EXT in
