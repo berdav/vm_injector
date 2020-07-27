@@ -68,7 +68,7 @@ if [ "x$IP" == "x" ]; then
 fi
 
 # Check if the host is already the target one
-OS="$(ssh -p "$PORT" -n -o PasswordAuthentication=no -i "$KEY" "$UNPRIVUSER@$IP" 'uname -s' || true)"
+OS="$(ssh -p "$PORT" -n -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$UNPRIVUSER@$IP" 'uname -s' || true)"
 if [ "x$OS" == "x$TARGET_OS" ]; then
 	echo "Seems that the system is already installed."
 	exit 0
@@ -91,6 +91,8 @@ case $EXT in
 		;;
 esac
 
-ssh -p "$PORT" -i "$KEY" "$USER@$IP" /root/inject.sh
+ssh -p "$PORT" -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$USER@$IP" /root/inject.sh
+
+ssh-keygen -R "$IP"
 
 echo "In 5 minute connect to the machine"
