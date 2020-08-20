@@ -18,21 +18,24 @@ IMG="target.img"
 TARGET_OS="OpenBSD"
 # Base directory of the script
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# Number of seconds to wait for the host
+SECONDS_TO_WAIT=0
 
 usage() {
-	echo "Usage: $1 <-i IP> [optargs]" >&2
-	echo -e "Optional arguments (optargs):" >&2
-	echo -e "\t-h print this help and exit" >&2
-	echo -e "\t-i IP      Set the target IP address to IP" >&2
+	echo "Usage: $1 <-i IP> [optargs]"                               >&2
+	echo -e "Optional arguments (optargs):"                          >&2
+	echo -e "\t-h print this help and exit"                          >&2
+	echo -e "\t-i IP      Set the target IP address to IP"           >&2
+	echo -e "\t-I IMAGE   Set the target injected image to IMAGE"    >&2
+	echo -e "\t-k KEY     Set the target SSH key to KEY"             >&2
+	echo -e "\t-p PORT    Set the target SSH port to PORT"           >&2
+	echo -e "\t-s SECONDS Number of seconds to wait for the host"    >&2
 	echo -e "\t-t TARGET  Set the target operating system to TARGET" >&2
-	echo -e "\t-p PORT    Set the target SSH port to PORT" >&2
-	echo -e "\t-k KEY     Set the target SSH key to KEY" >&2
-	echo -e "\t-u USER    Set the target unprivileged user to USER" >&2
-	echo -e "\t-U USER    Set the target privileged user to USER" >&2
-	echo -e "\t-I IMAGE   Set the target injected image to IMAGE" >&2
+	echo -e "\t-u USER    Set the target unprivileged user to USER"  >&2
+	echo -e "\t-U USER    Set the target privileged user to USER"    >&2
 }
 
-while getopts "hi:t:p:k:u:U:I:" options; do
+while getopts "hi:I:k:p:s:t:u:U:" options; do
 	case "$options" in
 		i)
 			IP="$OPTARG"
@@ -43,6 +46,9 @@ while getopts "hi:t:p:k:u:U:I:" options; do
 			;;
 		t)
 			TARGET_OS="$OPTARG"
+			;;
+		s)
+			SECONDS_TO_WAIT="$OPTARG"
 			;;
 		p)
 			PORT="$OPTARG"
@@ -59,6 +65,9 @@ while getopts "hi:t:p:k:u:U:I:" options; do
 		I)
 			IMG="$OPTARG"
 			;;
+		*)
+			echo "Warning: Option not recognized."
+			;;
 	esac
 done
 
@@ -66,22 +75,26 @@ if [ "x$IP" == "x" ]; then
 	usage "$0"
 	exit 1
 fi
-# Check if host is ready
-for COUNT in {1..21}; do
-	if [[ "$COUNT" -lt 20 ]]; then
-		if ssh -p "$PORT" -q -n -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$USER@$IP" 'true' ; then
-			echo "Success host is ready"
-			break
-		else
-			echo -n "."
-			sleep 1
-		fi
+
+echo "[ ] Checking if host is ready"
+HOST_READY=false
+for WAITED_SECONDS in {0..$(( $SECONDS_TO_WAIT + 1 ))}; do
+	if ssh -p "$PORT" -q -n \
+		-o PasswordAuthentication=no \
+		-o StrictHostKeyChecking=no \
+		-i "$KEY" "$USER@$IP" 'true' ; then
+		echo -e "\n[+] Success!  Host is ready."
+		HOST_READY=true
+		break
 	else
-		echo ""
-		echo "Seems that the connection with host have some problem"
-		exit 1
+		echo -n "."
+		sleep 1
 	fi
 done
+if ! $HOST_READY; then
+	echo -e "\n[-] Seems that the connection has problems, exiting"
+	exit 1
+fi
 
 # Check if the host is already the target one
 OS="$(ssh -p "$PORT" -n -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$UNPRIVUSER@$IP" 'uname -s' || true)"
