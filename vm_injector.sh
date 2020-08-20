@@ -66,6 +66,22 @@ if [ "x$IP" == "x" ]; then
 	usage "$0"
 	exit 1
 fi
+# Check if host is ready
+for COUNT in {1..21}; do
+	if [[ "$COUNT" -lt 20 ]]; then
+		if ssh -p "$PORT" -q -n -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$USER@$IP" 'true' ; then
+			echo "Success host is ready"
+			break
+		else
+			echo -n "."
+			sleep 1
+		fi
+	else
+		echo ""
+		echo "Seems that the connection with host have some problem"
+		exit 0
+	fi
+done
 
 # Check if the host is already the target one
 OS="$(ssh -p "$PORT" -n -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$UNPRIVUSER@$IP" 'uname -s' || true)"
