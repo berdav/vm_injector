@@ -79,7 +79,7 @@ for COUNT in {1..21}; do
 	else
 		echo ""
 		echo "Seems that the connection with host have some problem"
-		exit 0
+		exit 1
 	fi
 done
 
