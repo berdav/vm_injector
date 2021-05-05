@@ -50,6 +50,8 @@ ROOTLABEL=$(cat /proc/cmdline | sed 's/.*\(root=[^ ]*\).*/\1/')
 INITRD=/boot/initrd.img-$(uname -r)
 VMLINUX=/boot/vmlinuz-$(uname -r)
 
+TARGETDISK="$(mount  | grep ' / ' | awk '{print $1}' | sed 's/[0-9]*$//')"
+
 # Add executor to ramdisk
 cat <<_END_ >$EXECFILE
 #!/bin/sh
@@ -70,8 +72,8 @@ cat <<_END_ >$EXECFILE
 /bin/mount --move /sys /mnt/sys
 /bin/mount --move /run /mnt/run
 /sbin/pivot_root /mnt /mnt/old_root
-echo "[ ] Overwriting disk..."
-/bin/busybox dd if=$INSTALLDEST/target.img of=/dev/sda conv=sync
+echo "[ ] Overwriting disk $TARGETDISK..."
+/bin/busybox dd if=$INSTALLDEST/target.img of=$TARGETDISK conv=sync
 /bin/busybox reboot -f
 _END_
 chmod +x $EXECFILE
