@@ -51,13 +51,17 @@ INITRD=/boot/initrd.img-$(uname -r)
 VMLINUX=/boot/vmlinuz-$(uname -r)
 
 TARGETDISK="$(mount  | grep ' / ' | awk '{print $1}' | sed 's/[0-9]*$//')"
+# Get available RAM in GB
+RAMSIZE="$(cat /proc/meminfo | awk '/MemTotal/{print $2}')"
+RAMSIZE_GB="$(( $RAMSIZE / 1000 / 1000 ))"
 
 # Add executor to ramdisk
 cat <<_END_ >$EXECFILE
 #!/bin/sh
 /bin/echo "[+] running init script!"
 /bin/echo "[ ] Let s nuke down the system"
-/bin/mount -t tmpfs -o size=2G none /mnt
+/bin/echo "[ ] Got ${RAMSIZE_GB}GB RAM available"
+/bin/mount -t tmpfs -o size=${RAMSIZE_GB}G none /mnt
 /bin/mkdir /mnt/proc
 /bin/mkdir /mnt/dev
 /bin/mkdir /mnt/sys
