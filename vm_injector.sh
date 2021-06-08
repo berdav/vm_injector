@@ -120,7 +120,7 @@ case $EXT in
 		;;
 esac
 
-ssh -p "$PORT" -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$USER@$IP" /root/inject.sh
+ssh -p "$PORT" -o PasswordAuthentication=no -o StrictHostKeyChecking=no -i "$KEY" "$USER@$IP" /root/inject.sh || true
 
 ssh-keygen -R "$IP"
 
