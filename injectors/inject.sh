@@ -23,13 +23,13 @@ convert_ova() {
 	TARGET_TAR=$(echo "$OVA_URL" | sed 's/\.ova/.tar/')
 
 	mv $OVA_URL $TARGET_TAR
-	VMDK="$(tar taf $OVA_URL | grep vmdk)"
+	VMDK="$(tar taf $TARGET_TAR | grep vmdk)"
 
-	tar xvaf "$TARGET_URL"
+	tar xvaf "$TARGET_TAR"
 
 	convert_vmdk "$VMDK"
 
-	rm 
+	rm "$TARGET_TAR"
 }
 
 # Install busybox and kexec
