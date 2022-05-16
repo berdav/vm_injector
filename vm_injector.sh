@@ -79,6 +79,7 @@ fi
 echo "[ ] Checking if host is ready"
 HOST_READY=false
 for WAITED_SECONDS in $(seq 0 "$(( $SECONDS_TO_WAIT + 1 ))" ); do
+	ssh-keygen -R "$IP"
 	if ssh -p "$PORT" -q -n \
 		-o PasswordAuthentication=no \
 		-o StrictHostKeyChecking=no \
